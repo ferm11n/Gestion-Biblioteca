@@ -1,0 +1,37 @@
+{
+    "catalogo": [
+        {
+            "titulo": "las mamushkas",
+            "autor": "mam",
+            "isbn": "200",
+            "disponible": true
+        },
+        {
+            "titulo": "pepes",
+            "autor": "pepito",
+            "isbn": "123",
+            "disponible": true
+        },
+        {
+            "titulo": "Java como programar",
+            "autor": "Deitel and deitel",
+            "isbn": "2976",
+            "disponible": true
+        }
+    ],
+    "usuarios": [
+        {
+            "nombre": "Lucas",
+            "idUsuario": "1",
+            "tipoDeUsuario": "Alumno",
+            "prestamos": []
+        },
+        {
+            "nombre": "Mate",
+            "idUsuario": "2",
+            "tipoDeUsuario": "Profesor",
+            "prestamos": []
+        }
+    ],
+    "prestamos_activos": []
+}

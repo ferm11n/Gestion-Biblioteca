@@ -1,6 +1,6 @@
 #Representa a una persona que puede tomar libros prestados
 
-from models.Prestamo import Prestamo
+
 
 """
 El metodo __init__ es el constructor de la clase Usuario, inicializa los atributos del objeto cuando se crea una instancia
@@ -54,6 +54,7 @@ class Usuario:
     
     @staticmethod
     def deDict(data):
+        from models.Prestamo import Prestamo
         usuario = Usuario(data["nombre"], data["idUsuario"], data["tipoDeUsuario"])
         usuario.prestamos = [Prestamo.deDict(p) for p in data["prestamos"]]
         return usuario

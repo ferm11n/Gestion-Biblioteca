@@ -21,7 +21,7 @@ class Libro:
         return {
             "titulo": self.titulo,
             "autor": self.autor,
-            "isbn": self.sibn,
+            "isbn": self.isbn,
             "disponible": self.disponible
         }
     

@@ -3,7 +3,8 @@ from models.Prestamo import Prestamo
 from models.Usuario import Usuario
 from models.Libro import Libro
 from utils import fechaActual
-
+import json
+from gestionarJSON import guardarDatos
 
 """
 Clase biblioteca, esta clase gestiona el catalogo de libros, los usuarios, los prestamos activos y el historial de prestamos
@@ -29,6 +30,7 @@ class Biblioteca:
 """
     def agregarLibro(self, libro):
         self.catalogo.append(libro)
+        guardarDatos(self)
     
 
 
@@ -39,6 +41,7 @@ class Biblioteca:
 """
     def registrarUsuario(self, usuario):
         self.usuarios.append(usuario)
+        guardarDatos(self)
 
 
 
@@ -59,14 +62,38 @@ class Biblioteca:
 
     Si el libro no esta disponible, imprime un mensaje diciendo que el libro no se puede prestar.
 """
-    def prestarLibro(self, libro, usuario):
-        if libro.disponible:
-            prestamo = Prestamo(libro, usuario, fechaActual())
-            libro.disponible = False
-            self.prestamosActivos.append(prestamo)
-            usuario.prestamos.append(prestamo)
-        else:
-            print(f"El libro '{libro.titulo}' no está disponible.")
+    def prestarLibro(self, isbnlibro, idUsuario,):
+        libroEncontrado = None
+        for libro in self.catalogo:
+            if libro.isbn == isbnlibro:
+                libroEncontrado = libro
+                break
+
+        if libroEncontrado is None:
+            raise ValueError(f"Libro con ISBN '{isbnlibro}' no encontrado en el catalogo.")
+        
+        #Buscar el usuario por su ID
+        usuarioEncontrado = None
+        for usuario in self.usuarios:
+            if usuario.idUsuario == idUsuario:
+                usuarioEncontrado = usuario
+                break
+        if usuarioEncontrado is None:
+            raise ValueError(f"Usuario con ID '{idUsuario}' no encontrado.")
+        
+        #Verifica si el libro esta disponible
+        if not libroEncontrado.disponible:
+            raise ValueError(f"El libro '{libroEncontrado.titulo}' no esta disponible para prestar")
+        
+        #Registrar el prestamo
+        prestamo = Prestamo(libroEncontrado, usuarioEncontrado, fechaActual())
+        libroEncontrado.disponible = False
+        self.prestamosActivos.append(prestamo)
+        usuarioEncontrado.prestamos.append(prestamo)
+        guardarDatos(self) #Guardamos los cambios automaticamente
+        print(f"Libro '{libroEncontrado.titulo}' prestado exitosamente a {usuarioEncontrado.nombre}")
+
+
 
 
 
@@ -92,9 +119,12 @@ class Biblioteca:
     def devolverLibro(self, libro, usuario):
         for prestamo in self.prestamosActivos:
             if prestamo.libro == libro and prestamo.usuario == usuario:
-                libro,disponible = True
+                libro.disponible = True  # Corrige la asignación aquí
                 self.historialPrestamos.append(prestamo)        
                 self.prestamosActivos.remove(prestamo)
+                guardarDatos(self)  # Llamada para guardar los datos después de devolver el libro
+                print(f"El libro '{libro.titulo}' ha sido devuelto exitosamente.")
                 break
-        else:#reemplazar con ValueError -> Raise
-            print("No se pudo encontrar un prestamo activo para este libro y usuario.")        
+        else:
+            # Cambia esto para lanzar un ValueError en lugar de un print
+            raise ValueError("No se pudo encontrar un préstamo activo para este libro y usuario.")     
