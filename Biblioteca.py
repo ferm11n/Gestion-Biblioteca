@@ -5,6 +5,7 @@ from models.Libro import Libro
 from utils import fechaActual
 import json
 from gestionarJSON import guardarDatos
+import Biblioteca
 
 """
 Clase biblioteca, esta clase gestiona el catalogo de libros, los usuarios, los prestamos activos y el historial de prestamos
@@ -65,7 +66,7 @@ class Biblioteca:
     def prestarLibro(self, isbnlibro, idUsuario,):
         libroEncontrado = None
         for libro in self.catalogo:
-            if libro.isbn == isbnlibro:
+            if libro["isbn"] == isbnlibro:
                 libroEncontrado = libro
                 break
 
@@ -75,21 +76,21 @@ class Biblioteca:
         #Buscar el usuario por su ID
         usuarioEncontrado = None
         for usuario in self.usuarios:
-            if usuario.idUsuario == idUsuario:
+            if usuario["idUsuario"] == idUsuario:
                 usuarioEncontrado = usuario
                 break
         if usuarioEncontrado is None:
             raise ValueError(f"Usuario con ID '{idUsuario}' no encontrado.")
         
         #Verifica si el libro esta disponible
-        if not libroEncontrado.disponible:
+        if not libroEncontrado["disponible"]:
             raise ValueError(f"El libro '{libroEncontrado.titulo}' no esta disponible para prestar")
         
         #Registrar el prestamo
         prestamo = Prestamo(libroEncontrado, usuarioEncontrado, fechaActual())
-        libroEncontrado.disponible = False
+        libroEncontrado["disponible"] = False
         self.prestamosActivos.append(prestamo)
-        usuarioEncontrado.prestamos.append(prestamo)
+        usuarioEncontrado["prestamos"].append(prestamo)
         guardarDatos(self) #Guardamos los cambios automaticamente
         print(f"Libro '{libroEncontrado.titulo}' prestado exitosamente a {usuarioEncontrado.nombre}")
 
